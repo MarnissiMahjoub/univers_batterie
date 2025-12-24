@@ -1,0 +1,53 @@
+<odoo>
+   <record id="view_rpc_settings_form" model="ir.ui.view">
+        <field name="name">rpc.settings.form</field>
+        <field name="model">rpc.settings</field>
+        <field name="arch" type="xml">
+            <form string="Paramètres RPC">
+                <sheet>
+                    <!-- Paramètres de la base source -->
+                    <group string="Source">
+                        <field name="source_host"/>
+                        <field name="source_port"/>
+                        <field name="source_db"/>
+                        <field name="source_user"/>
+                        <field name="source_password" password="True"/>
+                    </group>
+
+                    <!-- Paramètres de la base destination -->
+                    <group string="Destination">
+                        <field name="dest_host"/>
+                        <field name="dest_port"/>
+                        <field name="dest_db"/>
+                        <field name="dest_user"/>
+                        <field name="dest_password" password="True"/>
+                    </group>
+
+                    <!-- Informations -->
+                    <group string="Informations">
+                        <field name="last_transfer_date" readonly="1"/>
+                                                <button name="action_run_rpc_transfer"
+                                string="Lancer le transfert"
+                                type="object"
+                                class="btn-primary"/>
+
+                    </group>
+
+                    <footer>
+                        <button name="action_run_rpc_transfer"
+                                string="Lancer le transfert"
+                                type="object"
+                                class="btn-primary"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_rpc_settings" model="ir.actions.act_window">
+        <field name="name">Paramètres RPC</field>
+        <field name="res_model">rpc.settings</field>
+        <field name="view_mode">form,tree</field>
+    </record>
+
+    <menuitem id="menu_rpc_settings_root" name="Paramètres RPC" parent="base.menu_email" action="action_rpc_settings"/>
+</odoo>
