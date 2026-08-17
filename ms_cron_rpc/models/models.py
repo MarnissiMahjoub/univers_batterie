@@ -26,10 +26,13 @@ class RpcSettings(models.Model):
         """Lancer le transfert RPC selon les paramètres configurés"""
         for rec in self:
             try:
-                url_src = f"http://{rec.source_host}:{rec.source_port}"
+                # Gestion dynamique du protocole (HTTPS pour 443, HTTP sinon)
+                proto_src = "https" if str(rec.source_port) == "443" else "http"
+                url_src = f"{proto_src}://{rec.source_host}:{rec.source_port}"
 
                 common_src = xmlrpc.client.ServerProxy(f"{url_src}/xmlrpc/2/common")
                 uid_src = common_src.authenticate(rec.source_db, rec.source_user, rec.source_password, {})
+
                 if not uid_src:
                     raise ValueError("Échec d'authentification sur la base source")
 
@@ -43,9 +46,12 @@ class RpcSettings(models.Model):
                 )
 
                 # Connexion destination
-                url_dest = f"http://{rec.dest_host}:{rec.dest_port}"
+                proto_dest = "https" if str(rec.dest_port) == "443" else "http"
+                url_dest = f"{proto_dest}://{rec.dest_host}:{rec.dest_port}"
+
                 common_dest = xmlrpc.client.ServerProxy(f"{url_dest}/xmlrpc/2/common")
                 uid_dest = common_dest.authenticate(rec.dest_db, rec.dest_user, rec.dest_password, {})
+
                 if not uid_dest:
                     raise ValueError("Échec d'authentification sur la base destination")
 
@@ -73,7 +79,6 @@ class RpcSettings(models.Model):
 
                 rec.last_transfer_date = fields.Datetime.now()
 
-                # Notification succès
                 return {
                     'type': 'ir.actions.client',
                     'tag': 'display_notification',
@@ -86,7 +91,6 @@ class RpcSettings(models.Model):
                 }
 
             except Exception as e:
-                # Notification erreur
                 return {
                     'type': 'ir.actions.client',
                     'tag': 'display_notification',
@@ -97,4 +101,3 @@ class RpcSettings(models.Model):
                         'type': 'danger',
                     }
                 }
-
